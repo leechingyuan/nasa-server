@@ -5,21 +5,15 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps: 
-      - uses: actions/checkout@v2
-      - name: Use Node.js version 17
-        uses: actions/setup-node@v2
-        with: 
-          node-version: '17'
   build:
     env:
       CI: true
       PORT: 8000
+      MONGO_URL: mongodb://localhost/nasa
     strategy:
       matrix:
         node-version: [16.x, 17.x]
+        mongodb-version: ['4.4']
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
@@ -27,5 +21,9 @@ jobs:
         uses: actions/setup-node@v2
         with: 
           node-version: ${{ matrix.node-version }}
+      - name: Use temporary MongoDB from GitHub actions for testing
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
       - run: npm install
       - run: npm test
