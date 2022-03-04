@@ -5,13 +5,20 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  test:
+  build:
+    env:
+      CI: true
+      PORT: 8000
+      MONGO_URL: mongodb+srv://nasa-api:v6nHbLPtkwKk63UK@nasacluster.hklaq.mongodb.net/nasa?retryWrites=true&w=majority
+    strategy:
+      matrix:
+        node-version: [16.x, 17.x]
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
-      - name: Use Node.js version 17
+      - name: Use Node.js version ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with: 
-          node-version: '17'
+          node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
